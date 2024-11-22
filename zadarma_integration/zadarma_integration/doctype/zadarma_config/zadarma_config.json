@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-11-21 12:21:59.214137",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "api_configuration_section",
+  "api_key",
+  "column_break_trtv",
+  "api_secret",
+  "section_break_bnid",
+  "from_number",
+  "enable_auto_calls",
+  "default_country",
+  "column_break_jdjo",
+  "webhook_url",
+  "number_format",
+  "section_break_twaj",
+  "webhook_status",
+  "column_break_stwl",
+  "last_sync",
+  "last_message"
+ ],
+ "fields": [
+  {
+   "fieldname": "api_configuration_section",
+   "fieldtype": "Section Break",
+   "label": "API Configuration"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "API Key",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_trtv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "API Secret",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_bnid",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "from_number",
+   "fieldtype": "Data",
+   "label": "From Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_auto_calls",
+   "fieldtype": "Check",
+   "label": "Enable Auto Calls"
+  },
+  {
+   "fieldname": "default_country",
+   "fieldtype": "Link",
+   "label": "Default Country",
+   "options": "Country"
+  },
+  {
+   "fieldname": "column_break_jdjo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "webhook_url",
+   "fieldtype": "Data",
+   "label": "Webhook URL"
+  },
+  {
+   "default": "Local",
+   "fieldname": "number_format",
+   "fieldtype": "Select",
+   "label": "Format Number",
+   "options": "\nInternacional (+34)\nLocal"
+  },
+  {
+   "fieldname": "section_break_twaj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "webhook_status",
+   "fieldtype": "Select",
+   "label": "Webhook Status",
+   "options": "\nActive\nInactive\nError"
+  },
+  {
+   "fieldname": "column_break_stwl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Syncronization"
+  },
+  {
+   "fieldname": "last_message",
+   "fieldtype": "Text",
+   "label": "Last Message"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-11-21 12:30:33.824516",
+ "modified_by": "Administrator",
+ "module": "Zadarma Integration",
+ "name": "Zadarma Config",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
