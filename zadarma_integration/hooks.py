@@ -23,6 +23,19 @@ app_license = "mit"
 
 # Includes in <head>
 # ------------------
+app_include_css = ["/assets/zadarma_integration/css/zadarma_phone.css"]
+app_include_js = [
+    "https://my.zadarma.com/webphoneWebRTCWidget/v8/js/loader-phone-lib.js?v=23",
+    "https://my.zadarma.com/webphoneWebRTCWidget/v8/js/loader-phone-fn.js?v=23",
+    "https://my.zadarma.com/webphoneWebRTCWidget/v8/js/widget-api.min.js",
+    "/assets/zadarma_integration/js/zadarma_phone.js"]
+
+override_whitelisted_methods = {
+    "zadarma_integration.zadarma_integration.doctype.zadarma_call_log.zadarma_call_log.get_recent_calls": "zadarma_integration.zadarma_integration.doctype.zadarma_call_log.zadarma_call_log.get_recent_calls",
+    "zadarma_integration.zadarma_integration.doctype.zadarma_call_log.zadarma_call_log.initiate_call": "zadarma_integration.zadarma_integration.doctype.zadarma_call_log.zadarma_call_log.initiate_call"
+}
+
+module_list = ["Zadarma Integration"]
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/zadarma_integration/css/zadarma_integration.css"
@@ -241,4 +254,3 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-

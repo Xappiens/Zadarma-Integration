@@ -19,6 +19,7 @@ class ZadarmaConfig(Document):
             response = zadarma_api.call(http_method='GET', api_path='/v1/info/balance/')
             self.webhook_status = "Active"
             self.last_message = f"Conexión exitosa: Balance {response}"
+            self.last_sync = frappe.utils.now()
         except Exception as e:
             self.webhook_status = "Error"
             self.last_message = str(e)

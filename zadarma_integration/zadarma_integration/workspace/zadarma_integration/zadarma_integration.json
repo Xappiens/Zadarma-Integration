@@ -1,0 +1,37 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"9wvaWKY0M1\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Zadarma Integration</span>\",\"col\":12}},{\"id\":\"FKUl6MgzCZ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Zadarma Configuration\",\"col\":3}}]",
+ "creation": "2024-11-25 08:02:04.561523",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "call",
+ "idx": 0,
+ "indicator_color": "blue",
+ "is_hidden": 0,
+ "label": "Zadarma Integration",
+ "links": [],
+ "modified": "2024-11-25 08:05:57.260059",
+ "modified_by": "Administrator",
+ "module": "Zadarma Integration",
+ "name": "Zadarma Integration",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 39.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Zadarma Configuration",
+   "link_to": "Zadarma Config",
+   "type": "DocType"
+  }
+ ],
+ "title": "Zadarma Integration"
+}

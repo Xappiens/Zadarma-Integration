@@ -2,7 +2,7 @@ frappe.ui.form.on("Zadarma Config", {
     refresh: function (frm) {
         // Añade un botón directamente a la barra superior
         frm.add_custom_button(
-            __("Probar Conexión"), // Texto del botón
+            __("Test Connection"), // Texto del botón
             function () {
                 frappe.call({
                     method: "zadarma_integration.zadarma_integration.doctype.zadarma_config.zadarma_config.trigger_test_connection",

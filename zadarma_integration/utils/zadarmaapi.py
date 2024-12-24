@@ -1,111 +1,112 @@
-import hashlib
-import hmac
-import base64
-import requests
+# -*- coding: utf-8 -*-
+__version__ = '1.1.0'
+import sys
 from hashlib import sha1, md5
 from collections import OrderedDict
-from urllib.parse import urlencode
+if sys.version_info.major > 2:
+    from urllib.parse import urlencode
+else:
+    from urllib import urlencode
+import hmac
+import requests
+import base64
 
-class ZadarmaAPI:
-    def __init__(self, public_key, private_key, sandbox_mode=False):
-        """
-        Initializes the Zadarma API Wrapper
-        :param public_key: API public key from user settings
-        :param private_key: API private key from user settings
-        :param sandbox_mode: Boolean to enable or disable sandbox environment
-        """
-        self.public_key = public_key
-        self.private_key = private_key
-        self.api_url = 'https://api-sandbox.zadarma.com' if sandbox_mode else 'https://api.zadarma.com'
 
-    def call(self, api_path, parameters=None, http_method='GET', response_type='json', use_auth=True):
-        """
-        Sends an API request to Zadarma
-        :param api_path: The endpoint of the API, including version info
-        :param parameters: Parameters for the request
-        :param http_method: The HTTP method to use (GET, POST, PUT, DELETE)
-        :param response_type: Expected response format ('json' or 'xml')
-        :param use_auth: Whether the request requires authentication
-        :return: Response from the API
-        """
-        if parameters is None:
-            parameters = {}
+class ZadarmaAPI(object):
 
-        parameters['format'] = response_type
-        http_method = http_method.upper()
-        if http_method not in ['GET', 'POST', 'PUT', 'DELETE']:
-            raise ValueError("Unsupported HTTP method. Choose from 'GET', 'POST', 'PUT', 'DELETE'.")
-
-        encoded_params = self._encode_parameters(parameters)
-        auth_header = self._create_auth_header(api_path, encoded_params) if use_auth else None
-
-        headers = {'Authorization': auth_header} if auth_header else {}
-        request_url = f"{self.api_url}{api_path}"
-
-        return self._execute_http_request(http_method, request_url, headers, encoded_params)
-
-    def _encode_parameters(self, parameters):
+    def __init__(self, key, secret, is_sandbox=False):
         """
-        Encodes parameters for the API request
-        :param parameters: Dictionary of parameters
-        :return: URL-encoded parameter string
+        Constructor
+        :param key: key from personal
+        :param secret: secret from personal
+        :param is_sandbox: (True|False)
         """
-        if any(not isinstance(value, str) for value in parameters.values()):
-            return self._encode_nested_parameters(OrderedDict(sorted(parameters.items())))
-        return urlencode(OrderedDict(sorted(parameters.items())))
+        self.key = key
+        self.secret = secret
+        self.is_sandbox = is_sandbox
+        self.__url_api = 'https://api.zadarma.com'
+        if is_sandbox:
+            self.__url_api = 'https://api-sandbox.zadarma.com'
 
-    def _execute_http_request(self, method, url, headers, params):
+    def call(self, method, params={}, request_type='GET', format='json', is_auth=True):
         """
-        Executes an HTTP request
-        :param method: HTTP method to use
-        :param url: The full request URL
-        :param headers: HTTP headers
-        :param params: Parameters for the request (GET or request body)
-        :return: Response content
+        Function for send API request
+        :param method: API method, including version number
+        :param params: Query params
+        :param request_type: (get|post|put|delete)
+        :param format: (json|xml)
+        :param is_auth: (True|False)
+        :return: response
         """
-        if method == 'GET':
-            response = requests.get(f"{url}?{params}", headers=headers)
+        request_type = request_type.upper()
+        if request_type not in ['GET', 'POST', 'PUT', 'DELETE']:
+            request_type = 'GET'
+        params['format'] = format
+        auth_str = None
+        is_nested_data = False
+        for k in params.values():
+            if not isinstance(k, str):
+                is_nested_data = True
+                break
+        if is_nested_data:
+            params_string = self.__http_build_query(OrderedDict(sorted(params.items())))
+            params = params_string
         else:
-            response = requests.request(method, url, headers=headers, data=params)
-        return response.text
+            params_string = urlencode(OrderedDict(sorted(params.items())))
 
-    def _encode_nested_parameters(self, data):
-        """
-        Creates a URL-encoded string for nested parameters
-        :param data: Dictionary representing the nested data
-        :return: URL-encoded string
-        """
-        parameter_pairs = {}
+        if is_auth:
+            auth_str = self.__get_auth_string_for_header(method, params_string)
 
-        def recursive_encoder(item, key_prefix=None):
-            if key_prefix is None:
-                key_prefix = []
+        if request_type == 'GET':
+            result = requests.get(self.__url_api + method + '?' + params_string, headers={'Authorization': auth_str})
+        elif request_type == 'POST':
+            result = requests.post(self.__url_api + method, headers={'Authorization': auth_str}, data=params)
+        elif request_type == 'PUT':
+            result = requests.put(self.__url_api + method, headers={'Authorization': auth_str}, data=params)
+        elif request_type == 'DELETE':
+            result = requests.delete(self.__url_api + method, headers={'Authorization': auth_str}, data=params)
+        return result.text
 
-            if isinstance(item, (list, tuple)):
-                for idx, element in enumerate(item):
-                    key_prefix.append(idx)
-                    recursive_encoder(element, key_prefix)
-                    key_prefix.pop()
-            elif isinstance(item, dict):
-                for key, value in item.items():
-                    key_prefix.append(key)
-                    recursive_encoder(value, key_prefix)
-                    key_prefix.pop()
+    def __http_build_query(self, data):
+        parents = list()
+        pairs = dict()
+
+        def renderKey(parents):
+            depth, outStr = 0, ''
+            for x in parents:
+                s = "[%s]" if depth > 0 or isinstance(x, int) else "%s"
+                outStr += s % str(x)
+                depth += 1
+            return outStr
+
+        def r_urlencode(data):
+            if isinstance(data, list) or isinstance(data, tuple):
+                for i in range(len(data)):
+                    parents.append(i)
+                    r_urlencode(data[i])
+                    parents.pop()
+            elif isinstance(data, dict):
+                for key, value in data.items():
+                    parents.append(key)
+                    r_urlencode(value)
+                    parents.pop()
             else:
-                key = ''.join(f"[{str(k)}]" if i > 0 else str(k) for i, k in enumerate(key_prefix))
-                parameter_pairs[key] = str(item)
+                pairs[renderKey(parents)] = str(data)
 
-        recursive_encoder(data)
-        return urlencode(parameter_pairs)
+            return pairs
+        return urlencode(r_urlencode(data))
 
-    def _create_auth_header(self, api_path, parameters_string):
+    def __get_auth_string_for_header(self, method, params_string):
         """
-        Creates the authentication header for the API request
-        :param api_path: API endpoint
-        :param parameters_string: URL-encoded parameter string
-        :return: Authentication header
+        :param method: API method, including version number
+        :param params: Query params dict
+        :return: auth header
         """
-        signature_data = api_path + parameters_string + md5(parameters_string.encode('utf-8')).hexdigest()
-        hmac_signature = hmac.new(self.private_key.encode('utf-8'), signature_data.encode('utf-8'), sha1).hexdigest()
-        auth_header = f"{self.public_key}:{base64.b64encode(hmac_signature.encode('utf-8')).decode()}"
-        return auth_header
+        data = method + params_string + md5(params_string.encode('utf8')).hexdigest()
+        hmac_h = hmac.new(self.secret.encode('utf8'), data.encode('utf8'), sha1)
+        if sys.version_info.major > 2:
+            bts = bytes(hmac_h.hexdigest(), 'utf8')
+        else:
+            bts = bytes(hmac_h.hexdigest()).encode('utf8')
+        auth = self.key + ':' + base64.b64encode(bts).decode()
+        return auth
